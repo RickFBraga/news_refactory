@@ -191,6 +191,18 @@ describe("PUT /news", () => {
     const { status } = await api.put(`/news/${news.id}`).send(newsBody);
     expect(status).toBe(httpStatus.BAD_REQUEST);
   });
+});
 
+describe("GET /news", () => {
+  it("should return paginated news (default pagination)", async () => {
+    const response = await api.get("/news?page=1&size=10&order=desc");
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("length");
+  });
 
+  it("should return paginated news (with page 2)", async () => {
+    const response = await api.get("/news?page=2&size=10&order=desc");
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("length");
+  });
 });
