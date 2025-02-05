@@ -12,15 +12,24 @@ function parseNewsId(req: Request): number | null {
 }
 
 export async function getNews(req: Request, res: Response) {
-  const news = await service.getNews();
-  return res.send(news);
+  const page = parseInt(req.query.page as string) || 1;
+  const order = req.query.order as string || "desc";
+  const titleFilter = req.query.title as string;
+
+  const news = await service.getNews(page, order, titleFilter);
+
+  return res.send({
+    data: news.data,
+    page: page,
+    order: order
+  });
 }
 
-export async function getSpecificNews(req: Request, res: Response) {
+export async function getNewsById(req: Request, res: Response) {
   const newsId = parseNewsId(req);
   if (!newsId) return res.status(httpStatus.BAD_REQUEST).send(INVALID_ID_MESSAGE);
 
-  const news = await service.getSpecificNews(newsId);
+  const news = await service.getNewsById(newsId);
   return res.send(news);
 }
 
@@ -30,12 +39,12 @@ export async function createNews(req: Request, res: Response) {
   return res.status(httpStatus.CREATED).send(createdNews);
 }
 
-export async function alterNews(req: Request, res: Response) {
+export async function updateNews(req: Request, res: Response) {
   const newsId = parseNewsId(req);
   if (!newsId) return res.status(httpStatus.BAD_REQUEST).send(INVALID_ID_MESSAGE);
 
   const newsData = req.body as AlterNewsData;
-  const alteredNews = await service.alterNews(newsId, newsData);
+  const alteredNews = await service.updateNews(newsId, newsData);
   return res.send(alteredNews);
 }
 

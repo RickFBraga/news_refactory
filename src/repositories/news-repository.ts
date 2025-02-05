@@ -8,11 +8,22 @@ function formatPublicationDate(date: string | Date): Date {
   return new Date(date);
 }
 
-export async function getNews() {
+export async function getNews(pageSize: number, skip: number, order: string, titleFilter: string) {
   return await prisma.news.findMany({
-    orderBy: { publicationDate: "desc" },
+    where: {
+      title: {
+        contains: titleFilter,
+        mode: "insensitive"
+      }
+    },
+    skip: skip,
+    take: pageSize,
+    orderBy: {
+      publicationDate: order === "desc" ? "desc" : "asc"
+    }
   });
 }
+
 
 export async function getNewsById(newsId: number) {
   return await prisma.news.findUnique({
